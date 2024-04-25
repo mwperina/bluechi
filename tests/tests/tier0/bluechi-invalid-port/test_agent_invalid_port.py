@@ -15,10 +15,10 @@ def exec(ctrl: BluechiControllerMachine, _: Dict[str, BluechiAgentMachine]):
     assert ctrl.wait_for_unit_state_to_be("bluechi-controller", "active")
 
     original_cfg = ctrl.config.deep_copy()
-    original_cfg.file_name = "zzz-ctrl.conf"
 
     # port contains an 'O' instead of a '0'
     new_cfg = original_cfg.deep_copy()
+    new_cfg.file_name = "zzz1-ctrl.conf"
     new_cfg.port = "542O"
     ctrl.create_file(new_cfg.get_confd_dir(), new_cfg.file_name, new_cfg.serialize())
     ctrl.systemctl.restart_unit("bluechi-controller")
@@ -26,6 +26,7 @@ def exec(ctrl: BluechiControllerMachine, _: Dict[str, BluechiAgentMachine]):
 
     # port out of range
     new_cfg = original_cfg.deep_copy()
+    new_cfg.file_name = "zzz2-ctrl.conf"
     new_cfg.port = "65538"
     ctrl.create_file(new_cfg.get_confd_dir(), new_cfg.file_name, new_cfg.serialize())
     # to ensure that a restart is possible, reset the lock due to too many failed attempts
@@ -35,6 +36,7 @@ def exec(ctrl: BluechiControllerMachine, _: Dict[str, BluechiAgentMachine]):
 
     # valid config again
     new_cfg = original_cfg.deep_copy()
+    new_cfg.file_name = "zzz3-ctrl.conf"
     ctrl.create_file(new_cfg.get_confd_dir(), new_cfg.file_name, new_cfg.serialize())
     # to ensure that a restart is possible, reset the lock due to too many failed attempts
     ctrl.systemctl.reset_failed_for_unit("bluechi-controller")
